@@ -10,9 +10,9 @@ module Lita
       config :token, type: String, required: true
       config :proxy, type: String
       config :parse, type: [String]
-      config :link_names, type: [true, false]
-      config :unfurl_links, type: [true, false]
-      config :unfurl_media, type: [true, false]
+      config :link_names, type: [TrueClass, FalseClass]
+      config :unfurl_links, type: [TrueClass, FalseClass]
+      config :unfurl_media, type: [TrueClass, FalseClass]
 
       # Provides an object for Slack-specific features.
       def chat_service
