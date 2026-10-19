@@ -171,7 +171,8 @@ module Lita
           user = User.find_by_id(data["user"])
           if user.nil?
             user_data = API.new(robot.config.adapters.slack).user_info(data["user"])['user']
-            user = User.create( user_id, user_data )
+            UserCreator.create_user(SlackUser.from_data(user_data), robot, robot_id)
+            user = User.find_by_id(data["user"])
           end
 
           dispatch_message(user)

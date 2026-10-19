@@ -59,6 +59,28 @@ describe Lita::Adapters::Slack::MessageHandler, lita: true do
         subject.handle
       end
 
+      context "when the user is not yet known" do
+        let(:api) { instance_double('Lita::Adapters::Slack::API') }
+        let(:user_data) { { "id" => "U023BECGF", "name" => "bobby", "real_name" => "Bobby Tables" } }
+
+        before do
+          allow(Lita::User).to receive(:find_by_id).and_return(nil, user)
+          allow(robot).to receive(:config).and_return(
+            double(adapters: double(slack: double))
+          )
+          allow(Lita::Adapters::Slack::API).to receive(:new).and_return(api)
+          allow(api).to receive(:user_info).with("U023BECGF").and_return("user" => user_data)
+        end
+
+        it "creates the user from users.info and dispatches the message" do
+          expect(Lita::Adapters::Slack::UserCreator).to receive(:create_user).with(
+            an_instance_of(Lita::Adapters::Slack::SlackUser), robot, robot_id
+          )
+          expect(robot).to receive(:receive).with(message)
+          subject.handle
+        end
+      end
+
       it "saves the timestamp in extensions" do
         subject.handle
         expect(message.extensions[:slack][:timestamp]).to eq("1234.5678")
